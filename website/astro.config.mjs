@@ -8,6 +8,7 @@ import starlightOpenAPI, { openAPISidebarGroups } from 'starlight-openapi';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { execSync } from 'node:child_process';
+import remarkGfm from 'remark-gfm';
 import remarkBasePath from './src/plugins/remark-base-path.mjs';
 import remarkHttpSnippets from './src/plugins/remark-http-snippets.mjs';
 
@@ -56,7 +57,13 @@ export default defineConfig({
 	output: 'static',
 	server: { port: docPort },
 	markdown: {
-		remarkPlugins: [[remarkBasePath, { base }], remarkHttpSnippets],
+		// remarkGfm is listed explicitly because Astro applies its built-in GFM
+		// support to .md only. MDX inherits `remarkPlugins` but not that built-in,
+		// so without this every table in a .mdx page renders as literal pipe
+		// characters. Splitting content between the two extensions is not an
+		// option here: the HTTP snippet plugin below emits JSX, which only .mdx
+		// renders, and several guides need both tables and snippets.
+		remarkPlugins: [remarkGfm, [remarkBasePath, { base }], remarkHttpSnippets],
 	},
 	integrations: [
 		starlight({
@@ -131,6 +138,7 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: 'Import MCP servers', slug: 'guides/importing-mcp-servers' },
+								{ label: 'Provision resources', slug: 'guides/provisioning-resources' },
 								{ label: 'Import skills', slug: 'guides/importing-skills' },
 								{ label: 'Import VS Code extensions', slug: 'guides/importing-extensions' },
 								{ label: 'Use tools, skills & extensions', slug: 'guides/mcp-skills-extensions' },
