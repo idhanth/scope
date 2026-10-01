@@ -46,8 +46,23 @@ const meta = {
   component: HarNetworkViewer,
   tags: ["ai-generated", "needs-work"],
   parameters: {
+    layout: "fullscreen",
     msw: { handlers: [harHandler] },
   },
+  // Stand-in for the portal's sticky 3rem app header (see Layout.tsx), so the
+  // detail panel's sticky offset renders the way it does in the portal.
+  decorators: [
+    (Story) => (
+      <>
+        <div className="sticky top-0 z-50 flex h-12 items-center border-b border-border/60 bg-background px-3 text-sm text-muted-foreground">
+          App header
+        </div>
+        <div className="w-full px-6 py-6 lg:px-8">
+          <Story />
+        </div>
+      </>
+    ),
+  ],
 } satisfies Meta<typeof HarNetworkViewer>;
 
 export default meta;
